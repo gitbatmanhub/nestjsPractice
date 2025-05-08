@@ -17,4 +17,10 @@
 
 ⚠ En caso que muestre mensaje "La bbdd xxx no existe se debe crear manualmente"
 
+6. Ejecutar SEED
 
+```/api/seed```
+
+7. Levantar
+
+   ```npm run:dev```

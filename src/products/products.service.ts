@@ -1,16 +1,11 @@
-import {
-  Injectable,
-  InternalServerErrorException,
-  Logger,
-  NotFoundException,
-} from '@nestjs/common';
-import { CreateProductDto } from './dto/create-product.dto';
-import { UpdateProductDto } from './dto/update-product.dto';
-import { DataSource, Repository } from 'typeorm';
-import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
-import { PaginationDto } from '../common/dto/pagination.dto';
-import { isUUID } from 'class-validator';
-import { Product, ProductImage } from './entities';
+import { Injectable, InternalServerErrorException, Logger, NotFoundException } from "@nestjs/common";
+import { CreateProductDto } from "./dto/create-product.dto";
+import { UpdateProductDto } from "./dto/update-product.dto";
+import { DataSource, Repository } from "typeorm";
+import { InjectDataSource, InjectRepository } from "@nestjs/typeorm";
+import { PaginationDto } from "../common/dto/pagination.dto";
+import { isUUID } from "class-validator";
+import { Product, ProductImage } from "./entities";
 
 @Injectable()
 export class ProductsService {
@@ -22,8 +17,9 @@ export class ProductsService {
     @InjectRepository(ProductImage)
     private readonly productImageRepository: Repository<ProductImage>,
     @InjectDataSource()
-    private readonly dataSource: DataSource,
-  ) {}
+    private readonly dataSource: DataSource
+  ) {
+  }
 
   async create(createProductDto: CreateProductDto) {
     try {
@@ -31,8 +27,8 @@ export class ProductsService {
       let product = this.productRepository.create({
         ...productDetails,
         image: image.map((image) =>
-          this.productImageRepository.create({ url: image }),
-        ),
+          this.productImageRepository.create({ url: image })
+        )
       });
       product = await this.productRepository.save(product);
       return { ...product, image };
@@ -46,11 +42,11 @@ export class ProductsService {
     const product = await this.productRepository.find({
       take: limit,
       skip: offset,
-      relations: { image: true },
+      relations: { image: true }
     });
     return product.map((product) => ({
       ...product,
-      image: product.image.map((img) => img.url),
+      image: product.image.map((img) => img.url)
     }));
   }
 
@@ -60,13 +56,13 @@ export class ProductsService {
       product = await this.productRepository.findOneBy({ id: term });
     } else {
       //product = await this.productRepository.findOneBy({ slug: term });
-      const queryBuilder = this.productRepository.createQueryBuilder('prod');
+      const queryBuilder = this.productRepository.createQueryBuilder("prod");
       product = await queryBuilder
-        .where('UPPER(title) =:title or slug =:slug', {
+        .where("UPPER(title) =:title or slug =:slug", {
           title: term.toUpperCase(),
-          slug: term.toLowerCase(),
+          slug: term.toLowerCase()
         })
-        .leftJoinAndSelect('prod.image', 'prodImages')
+        .leftJoinAndSelect("prod.image", "prodImages")
         .getOne();
     }
     if (!product) {
@@ -79,7 +75,7 @@ export class ProductsService {
     const { image = [], ...rest } = await this.findOne(term);
     return {
       ...rest,
-      images: image.map((image) => image.url),
+      images: image.map((image) => image.url)
     };
   }
 
@@ -88,7 +84,7 @@ export class ProductsService {
     const product = await this.productRepository.preload({
       id: id,
       ...toUpdate,
-      image: [],
+      image: []
     });
 
     if (!product) {
@@ -102,10 +98,10 @@ export class ProductsService {
     try {
       if (image) {
         await queryRunner.manager.delete(ProductImage, {
-          product: { id: product.id },
+          product: { id: product.id }
         });
         product.image = image.map((image) =>
-          this.productImageRepository.create({ url: image }),
+          this.productImageRepository.create({ url: image })
         );
         await queryRunner.manager.save(product);
       }
@@ -128,8 +124,17 @@ export class ProductsService {
     await this.productRepository.remove(product);
   }
 
+  async removeAllProducts() {
+    const queryBuilder = this.productRepository.createQueryBuilder("product");
+    try {
+      return await queryBuilder.delete().where({}).execute();
+    } catch (e) {
+      return this.handlerDbException(e);
+    }
+  }
+
   private handlerDbException(error: any) {
-    if (error.code === '23505') {
+    if (error.code === "23505") {
       this.logger.error(`Error occurred: ${error.message}`);
       throw new InternalServerErrorException(error.detail);
     }
