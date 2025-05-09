@@ -4,6 +4,8 @@
 /build
 postgres
 
+static/products/
+
 # Logs
 logs
 *.log
