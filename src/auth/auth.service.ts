@@ -59,7 +59,7 @@ export class AuthService {
       throw new BadRequestException(error.detail);
     }
     console.log(error);
-    throw new InternalServerErrorException(error.detail);
+    throw new InternalServerErrorException(error.message);
   }
 
   /*findAll() {
