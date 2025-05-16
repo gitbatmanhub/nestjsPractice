@@ -2,12 +2,15 @@ import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
 import { CreateUserDto, LoginUserDto } from './dto';
 import { AuthService } from './auth.service';
 import { AuthGuard } from '@nestjs/passport';
-import { GetUser } from './decorators/get-user.decorator';
 import { User } from './entities/user.entity';
-import { HeadersUserDecorator } from './decorators/headers-user.decorator';
 import { UserRoleGuard } from './guards/user-role.guard';
-import { RoleProtected } from './decorators/role-protected.decorator';
 import { ValidRoles } from './interfaces';
+import {
+  Auth,
+  GetUser,
+  HeadersUserDecorator,
+  RoleProtected,
+} from './decorators';
 
 @Controller('auth')
 export class AuthController {
@@ -48,8 +51,7 @@ export class AuthController {
   }
 
   @Get('private3')
-  // @SetMetadata('roles', ['super-user', 'admin'])
-  @RoleProtected(ValidRoles.superAdmin, ValidRoles.user)
+  @Auth()
   @UseGuards(AuthGuard(), UserRoleGuard)
   private3Route(@GetUser() user: User) {
     return { ok: true, user: user };
