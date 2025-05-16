@@ -50,6 +50,12 @@ export class AuthController {
     return { ok: true, user: user };
   }
 
+  @Get('check-status')
+  @Auth()
+  checkAuthStatus(@GetUser() user: User) {
+    return this.authService.checkAuthStatus(user);
+  }
+
   @Get('private3')
   @Auth()
   @UseGuards(AuthGuard(), UserRoleGuard)
