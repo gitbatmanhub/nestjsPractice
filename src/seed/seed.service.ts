@@ -23,7 +23,7 @@ export class SeedService {
   private async deleteAllTables() {
     await this.productService.removeAllProducts();
     const queryBuilder = this.userRepository.createQueryBuilder();
-    await queryBuilder.delete().where({}).delete();
+    queryBuilder.delete().where({}).delete();
   }
 
   private async insertUsers() {

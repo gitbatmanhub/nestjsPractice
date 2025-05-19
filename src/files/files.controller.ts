@@ -3,6 +3,7 @@ import {
   BadRequestException,
   Controller,
   Get,
+  HttpStatus,
   Param,
   Post,
   Res,
@@ -14,7 +15,9 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { FileFilter, FileNamer } from './helpers';
 import { ConfigService } from '@nestjs/config';
+import { ApiResponse, ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Files')
 @Controller('files')
 export class FilesController {
   constructor(
@@ -22,11 +25,18 @@ export class FilesController {
     private readonly configService: ConfigService,
   ) {}
 
+  @ApiResponse({
+    status: HttpStatus.CREATED,
+    description: 'File created',
+  })
+  @ApiResponse({
+    status: HttpStatus.BAD_REQUEST,
+    description: 'The file was a image',
+  })
   @Post('product')
   @UseInterceptors(
     FileInterceptor('file', {
       fileFilter: FileFilter,
-      //limits: { fileSize: 1000 },
       storage: diskStorage({
         destination: './static/products',
         filename: FileNamer,
@@ -42,6 +52,14 @@ export class FilesController {
     return { securUrl };
   }
 
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Obtain a file',
+  })
+  @ApiResponse({
+    status: HttpStatus.BAD_REQUEST,
+    description: 'No product image found',
+  })
   @Get('product/:imageName')
   findProductImage(
     @Res() res: Response,
