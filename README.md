@@ -24,3 +24,7 @@
 7. Levantar
 
    ```npm run:dev```
+
+### Documentación
+
+Visitar ```localhost:3000/api```
