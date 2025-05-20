@@ -8,6 +8,10 @@ import { SeedModule } from './seed/seed.module';
 import { FilesModule } from './files/files.module';
 import { AuthModule } from './auth/auth.module';
 import { MessagesWsModule } from './messages-ws/messages-ws.module';
+import { GraphQLModule } from '@nestjs/graphql';
+import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
+import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin/landingPage/default';
+import { join } from 'path';
 
 @Module({
   imports: [
@@ -26,6 +30,12 @@ import { MessagesWsModule } from './messages-ws/messages-ws.module';
       password: process.env.DB_PASSWORD,
       autoLoadEntities: true,
       synchronize: true,
+    }),
+    GraphQLModule.forRoot<ApolloDriverConfig>({
+      driver: ApolloDriver,
+      autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
+      playground: false,
+      plugins: [ApolloServerPluginLandingPageLocalDefault()],
     }),
     ProductsModule,
     CommonModule,
