@@ -4,7 +4,7 @@ import {
   InternalServerErrorException,
   UnauthorizedException,
 } from '@nestjs/common';
-import { CreateUserDto, LoginUserDto, ResponseLoginDto } from './dto';
+import { CreateUserDto, LoginUserDto, ResponseAuthDto } from './dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { JwtService } from '@nestjs/jwt';
 import { User } from './entities/user.entity';
@@ -29,8 +29,8 @@ export class AuthService {
       });
 
       await this.userRepository.save(user);
-      delete user.password;
-      return { ...user, token: this.getJwtToken({ id: user.id }) };
+
+      return this.plainResponseUser(user, this.getJwtToken({ id: user.id }));
     } catch (error) {
       this.handleDbError(error);
     }
@@ -59,15 +59,16 @@ export class AuthService {
   }
 
   checkAuthStatus(user: User) {
-    return {
+    return this.plainResponseUser(user, this.getJwtToken({ id: user.id }));
+    /*return {
       ...user,
       token: this.getJwtToken({ id: user.id }),
-    };
+    };*/
   }
 
   async plainResponseUser(user: User, token: string) {
     const { email, fullName } = user;
-    return new ResponseLoginDto(fullName, email, token);
+    return new ResponseAuthDto(fullName, email, token);
   }
 
   private handleDbError(error: any): never {

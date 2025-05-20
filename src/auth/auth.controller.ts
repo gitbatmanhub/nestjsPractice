@@ -15,7 +15,7 @@ import { UserRoleGuard } from './guards/user-role.guard';
 import { ValidRoles } from './interfaces';
 import {
   Auth,
-  GetUser,
+  GetUserREST,
   HeadersUserDecorator,
   RoleProtected,
 } from './decorators';
@@ -62,8 +62,8 @@ export class AuthController {
   @Get('private')
   @UseGuards(AuthGuard())
   testingPrivateRoute(
-    @GetUser() user: User,
-    @GetUser('email') userEmail: string,
+    @GetUserREST() user: User,
+    @GetUserREST('email') userEmail: string,
     @HeadersUserDecorator() headers: [],
   ) {
     return {
@@ -79,20 +79,20 @@ export class AuthController {
   // @SetMetadata('roles', ['super-user', 'admin'])
   @RoleProtected(ValidRoles.superAdmin, ValidRoles.user)
   @UseGuards(AuthGuard(), UserRoleGuard)
-  private2Route(@GetUser() user: User) {
+  private2Route(@GetUserREST() user: User) {
     return { ok: true, user: user };
   }
 
   @Get('check-status')
   @Auth()
-  checkAuthStatus(@GetUser() user: User) {
+  checkAuthStatus(@GetUserREST() user: User) {
     return this.authService.checkAuthStatus(user);
   }
 
   @Get('private3')
   @Auth()
   @UseGuards(AuthGuard(), UserRoleGuard)
-  private3Route(@GetUser() user: User) {
+  private3Route(@GetUserREST() user: User) {
     return { ok: true, user: user };
   }
 }

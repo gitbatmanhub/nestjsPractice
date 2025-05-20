@@ -1,7 +1,7 @@
 import { Field, ObjectType } from '@nestjs/graphql';
 
 @ObjectType()
-export class ResponseLoginDto {
+export class ResponseAuthDto {
   @Field()
   fullName: string;
 
