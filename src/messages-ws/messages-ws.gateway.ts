@@ -24,7 +24,6 @@ export class MessagesWsGateway
 
   async handleConnection(client: Socket) {
     const token = client.handshake.headers.authorization as string;
-    console.log(`Received ${token}`);
     let payload: JwtPayload;
     try {
       payload = this.jwtService.verify(token);
