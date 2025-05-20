@@ -6,7 +6,9 @@ import {
   MinLength,
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { Field, ObjectType } from '@nestjs/graphql';
 
+@ObjectType()
 export class CreateUserDto {
   @ApiProperty({
     description: 'Email of the user',
@@ -14,6 +16,7 @@ export class CreateUserDto {
   })
   @IsString()
   @IsEmail()
+  @Field()
   email: string;
 
   @ApiProperty({
@@ -27,6 +30,7 @@ export class CreateUserDto {
     message:
       'The password must have a Uppercase, lowercase letter and a number',
   })
+  @Field()
   password: string;
 
   @ApiProperty({
@@ -35,5 +39,6 @@ export class CreateUserDto {
   })
   @IsString()
   @MinLength(1)
+  @Field()
   fullName: string;
 }

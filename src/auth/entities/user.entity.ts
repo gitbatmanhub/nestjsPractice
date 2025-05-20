@@ -8,8 +8,11 @@ import {
 } from 'typeorm';
 import { Product } from '../../products/entities';
 import { ApiProperty } from '@nestjs/swagger';
+import { ObjectType } from '@nestjs/graphql';
+import { Exclude } from 'class-transformer';
 
 @Entity({ name: 'users' })
+@ObjectType()
 export class User {
   @ApiProperty({
     example: '7f2c70ed-121c-4cd6-ba38-8dc8ad0466c6',
@@ -32,6 +35,7 @@ export class User {
     uniqueItems: false,
     description: 'Password of User',
   })
+  @Exclude()
   @Column('text', { select: false })
   password: string;
 
@@ -63,6 +67,10 @@ export class User {
 
   @OneToMany(() => Product, (product) => product.user)
   product: Product;
+
+  constructor(partial: Partial<User>) {
+    Object.assign(this, partial);
+  }
 
   @BeforeInsert()
   checkEmailInsert() {
