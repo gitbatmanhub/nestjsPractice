@@ -60,10 +60,6 @@ export class AuthService {
 
   checkAuthStatus(user: User) {
     return this.plainResponseUser(user, this.getJwtToken({ id: user.id }));
-    /*return {
-      ...user,
-      token: this.getJwtToken({ id: user.id }),
-    };*/
   }
 
   async plainResponseUser(user: User, token: string) {
